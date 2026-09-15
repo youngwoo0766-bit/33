@@ -88,6 +88,40 @@
   }
   .btn-kakao:active { background: #f0d800; }
   .btn-retry { width: 100%; padding: 15px; border-radius: 14px; background: none; border: 1px solid var(--line); color: var(--sub); font-size: 15px; font-weight: 600; margin-top: 10px; }
+  .btn-sub { width: 100%; padding: 15px; border-radius: 14px; background: var(--teal-soft); color: var(--teal); font-size: 15px; font-weight: 700; margin-top: 10px; }
+  .btn-sub:active { background: #d5ece8; }
+  .btn-link { background: none; color: var(--sub); font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; margin-top: 14px; align-self: center; padding: 6px; }
+
+  .code-box { background: var(--card); border: 1px dashed #b9c5cf; border-radius: 12px; padding: 12px 14px; margin: 4px 0 8px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .code-box .lbl { font-size: 13px; color: var(--sub); line-height: 1.4; }
+  .code-box .code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 22px; font-weight: 800; letter-spacing: 3px; color: var(--ink); }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 13px; color: var(--sub); margin-bottom: 6px; font-weight: 600; }
+  .field input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 22px; font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: 5px; text-align: center; }
+  .field input:focus { outline: 2px solid var(--teal); border-color: transparent; }
+  .field input::placeholder { color: #c3ccd4; letter-spacing: 3px; font-size: 15px; font-family: inherit; }
+  .err { color: var(--rose); font-size: 13px; margin: -6px 0 12px; line-height: 1.5; }
+
+  .cmp-summary { background: var(--dark); color: #fff; border-radius: 16px; padding: 18px; margin: 20px 0 14px; }
+  .cmp-summary .big { font-size: 20px; font-weight: 800; line-height: 1.4; margin-bottom: 6px; }
+  .cmp-summary .sub { font-size: 14px; color: #c5d0da; line-height: 1.55; }
+  .cmp-summary .idx { font-size: 13px; color: #9fb0c0; margin-top: 10px; }
+  .cmp-summary .idx b { color: #fff; font-size: 16px; }
+
+  .grid { display: grid; grid-template-columns: 44px 1fr 1fr; gap: 6px 8px; font-size: 13px; margin-top: 10px; align-items: center; }
+  .grid .h { color: var(--faint); font-size: 12px; text-align: center; }
+  .grid .who { color: var(--sub); font-weight: 700; }
+  .grid .cell { display: flex; align-items: center; gap: 6px; }
+  .grid .cell .bar { flex: 1; height: 8px; }
+  .grid .cell .n { width: 14px; text-align: right; font-weight: 700; color: var(--ink); }
+
+  .cmp-row { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .cmp-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .tag { font-size: 12px; padding: 2px 9px; border-radius: 99px; font-weight: 700; white-space: nowrap; }
+  .tag.good { background: var(--teal-soft); color: var(--teal); }
+  .tag.mid { background: var(--amber-soft); color: var(--amber); }
+  .tag.bad { background: var(--rose-soft); color: var(--rose); }
 </style>
 </head>
 <body>
@@ -104,6 +138,7 @@
       <div class="dim-row"><span class="dot" style="background:var(--rose)"></span><span><b>애정</b> — 일대일의 깊고 친밀한 관계에 대한 욕구</span></div>
     </div>
     <button class="btn-main" onclick="startTest()">검사 시작 (36문항, 약 5분)</button>
+    <button class="btn-link" onclick="openCompare()">이미 결과 코드가 있어요 → 두 사람 궁합 보기</button>
     <p class="fine">본 검사는 FIRO 이론을 바탕으로 새로 작성한 문항으로 구성된 자기이해용 도구이며, 공식 FIRO-B® 검사가 아닙니다. 결과는 참고용입니다.</p>
   </section>
 
@@ -125,12 +160,33 @@
     <p class="grand-desc" id="grandDesc"></p>
     <p class="gap-desc" id="gapDesc"></p>
     <div id="dimCards"></div>
+    <div class="code-box">
+      <span class="lbl">내 결과 코드<br><span style="font-size:12px;color:var(--faint)">상대에게 알려주면 궁합을 볼 수 있어요</span></span>
+      <span class="code" id="myCode"></span>
+    </div>
+    <button class="btn-sub" onclick="openCompare(codeOf(scores), partnerCode)" id="cmpBtn">상대방과 상호작용 보기</button>
     <button class="btn-kakao" onclick="shareKakao()">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="#191919"><path d="M12 3C6.48 3 2 6.54 2 10.9c0 2.8 1.86 5.26 4.66 6.65-.15.53-.97 3.36-1 3.58 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.66-2.4 4.24-2.81.57.08 1.16.13 1.77.13 5.52 0 10-3.54 10-7.9C22 6.54 17.52 3 12 3z"/></svg>
       카카오톡으로 결과지 보내기
     </button>
     <button class="btn-retry" onclick="restart()">다시 검사하기</button>
     <p class="fine">점수 0–2 낮음 · 3–6 중간 · 7–9 높음. 어떤 수준도 좋거나 나쁜 것이 아닙니다. "나와의 채팅"을 선택하면 결과지를 내 카톡으로 보관할 수 있어요.</p>
+  </section>
+
+  <!-- 상호작용 비교 -->
+  <section id="compare" class="screen">
+    <div class="topbar">
+      <button class="btn-back" onclick="show(scores.eI === undefined ? 'intro' : 'result')">← 돌아가기</button>
+      <span class="counter">두 사람 상호작용</span>
+    </div>
+    <h1 style="font-size:22px">결과 코드 두 개로<br>서로의 관계 욕구가 어떻게 맞물리는지 봅니다</h1>
+    <p class="lead" style="font-size:14px">결과 코드는 검사 결과 화면에 표시되는 6자리 숫자입니다. (포용 표현·기대 / 통제 표현·기대 / 애정 표현·기대 순)</p>
+    <div class="field"><label for="codeA">나의 결과 코드</label><input id="codeA" inputmode="numeric" maxlength="6" placeholder="예: 537246"></div>
+    <div class="field"><label for="codeB">상대방의 결과 코드</label><input id="codeB" inputmode="numeric" maxlength="6" placeholder="예: 462571"></div>
+    <p class="err" id="cmpErr" hidden></p>
+    <button class="btn-main" onclick="runCompare()">상호작용 분석하기</button>
+    <div id="cmpOut"></div>
+    <p class="fine" id="cmpFine" hidden>상호 충족: 한쪽이 표현하는 정도와 다른 쪽이 기대하는 정도의 차이 · 주도권: 두 사람 모두 먼저 하려는지, 모두 기다리는지 · 비중: 그 영역을 중요하게 여기는 정도의 차이. FIRO 이론의 호환성 개념(Schutz)을 단순화한 것으로 참고용입니다.</p>
   </section>
 
 </div>
@@ -141,6 +197,8 @@
 // 2) 앱 설정 > 플랫폼 > Web에 배포 도메인 등록 (예: https://내앱.netlify.app)
 const KAKAO_JS_KEY = "여기에_카카오_자바스크립트_키_입력";
 const APP_URL = window.location.origin + window.location.pathname;
+const KEYS = ["eI","wI","eC","wC","eA","wA"];
+const partnerCode = parseCode(new URLSearchParams(window.location.search).get("with")) ? new URLSearchParams(window.location.search).get("with").replace(/\D/g, "") : "";
 
 if (KAKAO_JS_KEY && !KAKAO_JS_KEY.includes("여기에") && window.Kakao && !Kakao.isInitialized()) {
   Kakao.init(KAKAO_JS_KEY);
@@ -287,6 +345,8 @@ function computeAndShowResult() {
   document.getElementById("grandScore").innerHTML = "전체 대인관계 욕구 " + grand + " <small>/ 54</small>";
   document.getElementById("grandDesc").textContent = grandLabel;
   document.getElementById("gapDesc").textContent = "표현 합계 " + expr + " · 기대 합계 " + want + " — " + gapLabel;
+  document.getElementById("myCode").textContent = codeOf(scores);
+  document.getElementById("cmpBtn").textContent = partnerCode ? "링크 보낸 사람과 상호작용 보기" : "상대방과 상호작용 보기";
 
   const pairKeys = { "포용": ["eI","wI"], "통제": ["eC","wC"], "애정": ["eA","wA"] };
   const cards = document.getElementById("dimCards");
@@ -318,16 +378,120 @@ function shareKakao() {
   const grand = Object.values(scores).reduce((a, b) => a + b, 0);
   const text =
     "📋 대인관계 욕구 검사 결과지\n" +
-    "전체 욕구 지수 " + grand + "/54\n\n" +
+    "전체 욕구 지수 " + grand + "/54 · 결과 코드 " + codeOf(scores) + "\n\n" +
     "🟢 포용 — 표현 " + scores.eI + " (" + lv("eI") + ") · 기대 " + scores.wI + " (" + lv("wI") + ")\n" +
     "🟠 통제 — 표현 " + scores.eC + " (" + lv("eC") + ") · 기대 " + scores.wC + " (" + lv("wC") + ")\n" +
-    "🔴 애정 — 표현 " + scores.eA + " (" + lv("eA") + ") · 기대 " + scores.wA + " (" + lv("wA") + ")";
+    "🔴 애정 — 표현 " + scores.eA + " (" + lv("eA") + ") · 기대 " + scores.wA + " (" + lv("wA") + ")\n\n" +
+    "아래 버튼으로 검사하면 나와의 상호작용 결과까지 볼 수 있어요.";
+  const withUrl = APP_URL + "?with=" + codeOf(scores);
   Kakao.Share.sendDefault({
     objectType: "text",
     text: text,
-    link: { mobileWebUrl: APP_URL, webUrl: APP_URL },
-    buttonTitle: "나도 검사해보기",
+    link: { mobileWebUrl: withUrl, webUrl: withUrl },
+    buttonTitle: "나도 검사하고 궁합 보기",
   });
+}
+
+// ═══════════ 상호작용(호환성) 분석 ═══════════
+function codeOf(sc) { return KEYS.map(k => sc[k]).join(""); }
+function parseCode(str) {
+  const d = (str || "").replace(/\D/g, "");
+  if (d.length !== 6) return null;
+  const o = {};
+  KEYS.forEach((k, i) => { o[k] = +d[i]; });
+  return o;
+}
+function openCompare(mine, other) {
+  document.getElementById("codeA").value = mine || "";
+  document.getElementById("codeB").value = other || "";
+  document.getElementById("cmpOut").innerHTML = "";
+  document.getElementById("cmpErr").hidden = true;
+  document.getElementById("cmpFine").hidden = true;
+  show("compare");
+  if (mine && other) runCompare();
+}
+
+const CMP_WORDS = {
+  "포용": { give: "먼저 어울리자고 다가가는", want: "끼워주길 바라는",
+    both_init: "둘 다 먼저 다가가는 편이라 함께하는 자리가 자연스럽게 많아집니다. 다만 둘 다 상대가 불러주길 기다리는 마음은 크지 않아, 서로의 초대에 무심해 보일 수 있어요.",
+    both_wait: "둘 다 상대가 먼저 불러주길 기다리는 편입니다. 아무도 먼저 연락하지 않아 관계가 느슨해질 수 있으니, 의식적으로 한쪽이 먼저 제안해 보세요.",
+    balanced: "한쪽이 다가가고 다른 쪽이 반기는 흐름, 혹은 둘 다 적당히 오가는 흐름이라 어울리는 리듬이 잘 맞물립니다." },
+  "통제": { give: "주도하고 결정하려는", want: "이끌어주길 바라는",
+    both_init: "둘 다 방향을 정하고 싶어 하는 편이라 의견이 갈릴 때 주도권 다툼이 생기기 쉽습니다. 영역을 나누어 각자 책임지는 방식이 도움이 됩니다.",
+    both_wait: "둘 다 누군가 정해주길 바라는 편이라 결정이 미뤄지거나 흐지부지될 수 있습니다. 작은 일이라도 번갈아 결정하는 규칙을 두어 보세요.",
+    balanced: "이끄는 쪽과 따르는 쪽의 균형이 맞아 결정이 순조롭게 진행되는 조합입니다." },
+  "애정": { give: "친밀함을 표현하는", want: "친밀함을 원하는",
+    both_init: "둘 다 애정을 적극적으로 표현하는 편이라 따뜻한 관계가 되기 쉽습니다. 다만 받는 것에는 둘 다 큰 욕구가 없어, 표현이 겉돌지 않도록 서로의 표현을 알아봐 주세요.",
+    both_wait: "둘 다 상대가 먼저 마음을 열어주길 기다리는 편이라 친밀함이 깊어지는 데 시간이 걸립니다. 작은 표현이라도 먼저 건네 보세요.",
+    balanced: "표현하는 쪽과 받는 쪽이 자연스럽게 맞물려 정서적으로 안정된 흐름입니다." },
+};
+
+function reciprocalLine(giverName, giverE, wanterName, wanterW, w) {
+  const d = giverE - wanterW;
+  if (Math.abs(d) <= 2) return giverName + "가 " + w.give + " 정도(" + giverE + ")와 " + wanterName + "가 " + w.want + " 정도(" + wanterW + ")가 잘 맞습니다.";
+  if (d > 0) return giverName + "가 " + w.give + " 정도(" + giverE + ")가 " + wanterName + "가 " + w.want + " 정도(" + wanterW + ")보다 커서, " + wanterName + "에게는 다소 과하거나 부담스럽게 느껴질 수 있어요.";
+  return wanterName + "가 " + w.want + " 정도(" + wanterW + ")에 비해 " + giverName + "가 " + w.give + " 정도(" + giverE + ")가 적어서, " + wanterName + "가 아쉬움을 느낄 수 있어요.";
+}
+
+function runCompare() {
+  const A = parseCode(document.getElementById("codeA").value);
+  const B = parseCode(document.getElementById("codeB").value);
+  const err = document.getElementById("cmpErr");
+  if (!A || !B) {
+    err.textContent = "결과 코드는 0~9 사이 숫자 6자리입니다. 두 코드를 모두 입력해 주세요.";
+    err.hidden = false;
+    return;
+  }
+  err.hidden = true;
+
+  const pair = { "포용": ["eI","wI"], "통제": ["eC","wC"], "애정": ["eA","wA"] };
+  let totalR = 0;
+  let cards = "";
+  ["포용","통제","애정"].forEach(dim => {
+    const [ek, wk] = pair[dim];
+    const aE = A[ek], aW = A[wk], bE = B[ek], bW = B[wk];
+    const c = DIM_COLOR[dim], w = CMP_WORDS[dim];
+    const r = Math.abs(aE - bW) + Math.abs(bE - aW);   // 상호 충족 (0~18, 낮을수록 좋음)
+    const o = (aE - aW) + (bE - bW);                    // 주도권 (-18~18, 0 근처가 균형)
+    const x = Math.abs((aE + aW) - (bE + bW));          // 비중 차이 (0~18)
+    totalR += r;
+
+    const rTag = r <= 4 ? ["good","잘 맞음"] : r <= 9 ? ["mid","조율 필요"] : ["bad","온도차 큼"];
+    const oText = o >= 5 ? w.both_init : o <= -5 ? w.both_wait : w.balanced;
+    const oTag = Math.abs(o) <= 4 ? ["good","균형"] : o > 0 ? ["mid","둘 다 주도"] : ["mid","둘 다 대기"];
+    const xText = x <= 3 ? "이 영역을 중요하게 여기는 정도가 비슷합니다."
+      : x <= 8 ? "이 영역에 두는 비중이 조금 다릅니다. 한 사람이 더 신경 쓰는 만큼 상대도 그 마음을 알아주는 게 좋아요."
+      : "한 사람에게는 중요한 영역이 다른 사람에게는 그리 중요하지 않을 수 있습니다. 온도차를 서운함이 아닌 차이로 이해하는 것이 필요해요.";
+    const xTag = x <= 3 ? ["good","비슷"] : x <= 8 ? ["mid","다소 차이"] : ["bad","차이 큼"];
+
+    const bar = v => '<div class="cell"><div class="bar" style="background:' + c.soft + '"><div style="width:' + (v / 9 * 100) + '%;background:' + c.bar + '"></div></div><span class="n">' + v + '</span></div>';
+
+    cards += '<div class="dim-card">' +
+      '<div class="dim-head"><span class="dim-name" style="color:' + c.text + '">' + dim + '</span><span class="tag ' + rTag[0] + '">' + rTag[1] + '</span></div>' +
+      '<div class="grid"><span></span><span class="h">표현</span><span class="h">기대</span>' +
+        '<span class="who">나</span>' + bar(aE) + bar(aW) +
+        '<span class="who">상대</span>' + bar(bE) + bar(bW) + '</div>' +
+      '<div class="cmp-row"><div class="cmp-title"><span>상호 충족</span><span class="tag ' + rTag[0] + '">' + rTag[1] + '</span></div>' +
+        '<p class="interp">' + reciprocalLine("나", aE, "상대", bW, w) + '</p>' +
+        '<p class="interp">' + reciprocalLine("상대", bE, "나", aW, w) + '</p></div>' +
+      '<div class="cmp-row"><div class="cmp-title"><span>주도권</span><span class="tag ' + oTag[0] + '">' + oTag[1] + '</span></div><p class="interp">' + oText + '</p></div>' +
+      '<div class="cmp-row"><div class="cmp-title"><span>비중</span><span class="tag ' + xTag[0] + '">' + xTag[1] + '</span></div><p class="interp">' + xText + '</p></div>' +
+      '</div>';
+  });
+
+  const fit = 54 - totalR;
+  const head = totalR <= 12 ? "서로의 욕구를 잘 채워주는 조합"
+    : totalR <= 27 ? "잘 맞는 부분과 조율할 부분이 함께 있는 조합"
+    : "서로 바라는 것이 많이 다른 조합";
+  const sub = totalR <= 12 ? "한쪽이 주는 것과 다른 쪽이 바라는 것이 대체로 맞물립니다. 지금의 방식을 유지하면서 아래 영역별 포인트만 살펴보세요."
+    : totalR <= 27 ? "어떤 영역은 자연스럽게 맞고, 어떤 영역은 서로의 기대치를 이야기해야 합니다. '조율 필요'로 표시된 영역을 먼저 확인해 보세요."
+    : "표현하는 정도와 기대하는 정도의 간격이 큰 영역이 많습니다. 나쁜 조합이라는 뜻이 아니라, 서로가 무엇을 바라는지 말로 확인하는 과정이 특히 중요하다는 뜻입니다.";
+
+  document.getElementById("cmpOut").innerHTML =
+    '<div class="cmp-summary"><div class="big">' + head + '</div><div class="sub">' + sub + '</div>' +
+    '<div class="idx">상호 충족도 <b>' + fit + '</b> / 54 &nbsp;·&nbsp; 나 ' + codeOf(A) + ' · 상대 ' + codeOf(B) + '</div></div>' + cards;
+  document.getElementById("cmpFine").hidden = false;
+  document.getElementById("cmpOut").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 </script>
 </body>
