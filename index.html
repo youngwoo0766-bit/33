@@ -122,6 +122,20 @@
   .tag.good { background: var(--teal-soft); color: var(--teal); }
   .tag.mid { background: var(--amber-soft); color: var(--amber); }
   .tag.bad { background: var(--rose-soft); color: var(--rose); }
+
+  .guide-h { font-size: 20px; font-weight: 800; margin: 30px 0 6px; }
+  .guide-lead { font-size: 14px; color: var(--sub); line-height: 1.6; margin-bottom: 14px; }
+  .note { border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; font-size: 14px; line-height: 1.6; }
+  .note.good { background: var(--teal-soft); color: #0b5f57; }
+  .note.warn { background: var(--amber-soft); color: #7a4300; }
+  .note b { display: block; font-size: 13px; margin-bottom: 4px; letter-spacing: .2px; }
+  .tip { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.6; color: var(--ink); margin-top: 10px; }
+  .tip .who { flex-shrink: 0; width: 44px; text-align: center; font-size: 12px; font-weight: 800; padding: 3px 0; border-radius: 8px; margin-top: 2px; }
+  .tip .who.me { background: var(--dark); color: #fff; }
+  .tip .who.you { background: var(--line); color: var(--ink); }
+  .tip .who.us { background: var(--teal); color: #fff; }
+  .q { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: var(--bg); font-size: 14px; line-height: 1.55; color: var(--sub); }
+  .q b { color: var(--ink); display: block; font-size: 12px; margin-bottom: 4px; }
 </style>
 </head>
 <body>
@@ -433,6 +447,79 @@ function reciprocalLine(giverName, giverE, wanterName, wanterW, w) {
   return wanterName + "가 " + w.want + " 정도(" + wanterW + ")에 비해 " + giverName + "가 " + w.give + " 정도(" + giverE + ")가 적어서, " + wanterName + "가 아쉬움을 느낄 수 있어요.";
 }
 
+const CMP_GUIDE = {
+  "포용": {
+    over: "모임 제안이나 연락 빈도를 상대의 페이스에 맞춰 조금 줄여 보세요. 상대의 거절이 곧 거부는 아닙니다.",
+    over_other: "혼자만의 시간이 필요할 때는 '지금은 쉬고 싶다'고 미리 말해 주세요. 그래야 상대가 오해하지 않아요.",
+    under: "일주일에 한 번이라도 먼저 연락하거나 만나자고 제안해 보세요. 상대에게는 그 한 번이 크게 느껴집니다.",
+    under_other: "함께하고 싶은 마음을 말로 전해 주세요. 상대는 필요를 몰라서 안 하는 것일 수 있어요.",
+    both_init: "함께 어울리는 자리는 많지만 서로를 '챙긴다'는 느낌은 부족할 수 있어요. 가끔은 상대만을 위한 초대를 해보세요.",
+    both_wait: "누가 먼저 연락할지 정해 두세요. 번갈아 하는 규칙만으로도 관계의 공백이 줄어듭니다.",
+    diff: "함께하는 시간의 '양'을 두고 다투기보다, 함께 있는 시간의 '질'에 합의하세요. 짧아도 온전히 집중하는 시간이 서로를 만족시킵니다.",
+    ok: "지금처럼 서로 편한 거리를 유지하면 됩니다. 이 균형이 깨질 때(이사, 바쁜 시기 등) 먼저 이야기해 주세요.",
+    q: "우리가 함께 시간을 보내는 빈도, 지금 딱 좋아? 더 자주가 좋아, 덜 자주가 좋아?" },
+  "통제": {
+    over: "결정하기 전에 '너는 어떻게 생각해?'를 먼저 물어보세요. 상대가 따라주는 것과 동의하는 것은 다릅니다.",
+    over_other: "따라가는 게 편하더라도, 정말 싫은 일은 분명히 말해 주세요. 그래야 상대가 조절할 수 있어요.",
+    under: "상대는 당신이 방향을 잡아주길 기대합니다. 작은 일부터 '이렇게 하자'고 먼저 제안해 보세요.",
+    under_other: "결정을 기다리기보다 '이건 네가 정해줬으면 좋겠어'라고 구체적으로 요청하세요.",
+    both_init: "영역을 나누세요. 예를 들어 돈 관련은 한 사람이, 일정은 다른 사람이 맡고, 서로의 영역에서는 최종 결정을 존중합니다.",
+    both_wait: "미루면 둘 다 답답해집니다. 사소한 결정은 동전 던지기라도 좋으니 '오늘 안에 정한다'는 규칙을 두세요.",
+    diff: "한 사람에게 규칙과 계획은 안정감이고, 다른 사람에게는 구속입니다. 꼭 필요한 최소한의 규칙만 함께 정하세요.",
+    ok: "이끄는 쪽과 따르는 쪽이 자연스럽습니다. 가끔 역할을 바꿔보면 관계가 더 단단해져요.",
+    q: "결정할 때 내가 너무 밀어붙이거나, 반대로 너무 미루는 느낌이 든 적 있어?" },
+  "애정": {
+    over: "표현의 양보다 상대가 편안해하는 방식을 찾으세요. 말보다 행동, 행동보다 함께 있는 시간이 더 잘 닿을 수 있어요.",
+    over_other: "표현을 받는 게 어색해도 '고마워' 한마디는 상대에게 큰 답이 됩니다.",
+    under: "상대는 애정을 확인받고 싶어 합니다. 하루 한 번, 짧은 말이나 작은 행동으로 마음을 보여 주세요.",
+    under_other: "상대의 표현이 적은 건 마음이 없어서가 아닐 수 있어요. '이럴 때 이런 말을 들으면 좋아'라고 알려 주세요.",
+    both_init: "둘 다 잘 표현하는 만큼, 받은 표현을 알아채고 되돌려주는 데도 신경 쓰세요.",
+    both_wait: "먼저 마음을 여는 게 둘 다 어렵습니다. 작은 고민 하나를 나누는 것부터 시작해 보세요.",
+    diff: "친밀함의 온도가 다릅니다. 더 원하는 쪽은 원하는 것을 구체적으로 알려주고, 덜 원하는 쪽은 상대의 표현을 작은 것이라도 받아주세요.",
+    ok: "지금의 온도가 서로 편안합니다. 힘들 때 기대도 된다는 걸 가끔 말로 확인해 주세요.",
+    q: "내가 어떤 말이나 행동을 할 때 소중히 여겨진다고 느껴?" },
+};
+
+function buildGuide(dims) {
+  const tipHtml = (who, text) => {
+    const cls = who === "나" ? "me" : who === "상대" ? "you" : "us";
+    return '<div class="tip"><span class="who ' + cls + '">' + who + '</span><span>' + text + '</span></div>';
+  };
+  let html = '<h2 class="guide-h">좋은 관계를 위한 가이드</h2>' +
+    '<p class="guide-lead">점수는 옳고 그름이 아니라 방향입니다. 아래 팁은 두 사람의 점수 차이에서 나온 것으로, 서로의 방식을 바꾸기보다 <b>차이를 알고 조율하는 데</b> 쓰세요.</p>';
+
+  const strong = dims.filter(d => d.r <= 4).map(d => d.dim);
+  const weak = dims.filter(d => d.r > 4).sort((a, b) => b.r - a.r);
+  if (strong.length) {
+    html += '<div class="note good"><b>이 관계의 강점</b>' + strong.join(" · ") + ' 영역에서 주고받는 것이 잘 맞습니다. 갈등이 생겨도 이 영역의 편안함을 기반으로 대화를 시작하면 풀기 쉬워요.</div>';
+  }
+  if (weak.length) {
+    const first = weak[0];
+    html += '<div class="note warn"><b>먼저 챙길 것</b>' + first.dim + ' 영역의 간격이 가장 큽니다. 한 번에 다 고치려 하지 말고, 이 영역에서 아래 팁 중 하나만 이번 주에 실천해 보세요.' +
+      (weak.length > 1 ? ' 그다음은 ' + weak.slice(1).map(d => d.dim).join(", ") + ' 순서입니다.' : '') + '</div>';
+  } else {
+    html += '<div class="note good"><b>전반적으로</b>세 영역 모두 큰 간격이 없습니다. 지금의 방식이 통하고 있다는 뜻이니, 아래 팁은 관계를 더 깊게 하는 용도로 활용하세요.</div>';
+  }
+
+  dims.forEach(d => {
+    const g = CMP_GUIDE[d.dim], c = DIM_COLOR[d.dim];
+    const tips = [];
+    const add = (who, text) => { if (!tips.some(t => t[0] === who && t[1] === text)) tips.push([who, text]); };
+    if (d.dAB >= 3) { add("나", g.over); add("상대", g.over_other); }
+    if (d.dAB <= -3) { add("나", g.under); add("상대", g.under_other); }
+    if (d.dBA >= 3) { add("상대", g.over); add("나", g.over_other); }
+    if (d.dBA <= -3) { add("상대", g.under); add("나", g.under_other); }
+    if (d.o >= 5) add("함께", g.both_init);
+    if (d.o <= -5) add("함께", g.both_wait);
+    if (d.x >= 9) add("함께", g.diff);
+    if (!tips.length) add("함께", g.ok);
+    html += '<div class="dim-card"><div class="dim-head"><span class="dim-name" style="color:' + c.text + '">' + d.dim + '</span><span class="dim-sub">' + DIM_DESC[d.dim] + '</span></div>' +
+      tips.map(t => tipHtml(t[0], t[1])).join("") +
+      '<div class="q"><b>함께 이야기해볼 질문</b>' + g.q + '</div></div>';
+  });
+  return html;
+}
+
 function runCompare() {
   const A = parseCode(document.getElementById("codeA").value);
   const B = parseCode(document.getElementById("codeB").value);
@@ -447,6 +534,7 @@ function runCompare() {
   const pair = { "포용": ["eI","wI"], "통제": ["eC","wC"], "애정": ["eA","wA"] };
   let totalR = 0;
   let cards = "";
+  const dims = [];
   ["포용","통제","애정"].forEach(dim => {
     const [ek, wk] = pair[dim];
     const aE = A[ek], aW = A[wk], bE = B[ek], bW = B[wk];
@@ -455,6 +543,7 @@ function runCompare() {
     const o = (aE - aW) + (bE - bW);                    // 주도권 (-18~18, 0 근처가 균형)
     const x = Math.abs((aE + aW) - (bE + bW));          // 비중 차이 (0~18)
     totalR += r;
+    dims.push({ dim, r, o, x, dAB: aE - bW, dBA: bE - aW });
 
     const rTag = r <= 4 ? ["good","잘 맞음"] : r <= 9 ? ["mid","조율 필요"] : ["bad","온도차 큼"];
     const oText = o >= 5 ? w.both_init : o <= -5 ? w.both_wait : w.balanced;
@@ -489,7 +578,7 @@ function runCompare() {
 
   document.getElementById("cmpOut").innerHTML =
     '<div class="cmp-summary"><div class="big">' + head + '</div><div class="sub">' + sub + '</div>' +
-    '<div class="idx">상호 충족도 <b>' + fit + '</b> / 54 &nbsp;·&nbsp; 나 ' + codeOf(A) + ' · 상대 ' + codeOf(B) + '</div></div>' + cards;
+    '<div class="idx">상호 충족도 <b>' + fit + '</b> / 54 &nbsp;·&nbsp; 나 ' + codeOf(A) + ' · 상대 ' + codeOf(B) + '</div></div>' + cards + buildGuide(dims);
   document.getElementById("cmpFine").hidden = false;
   document.getElementById("cmpOut").scrollIntoView({ behavior: "smooth", block: "start" });
 }
